@@ -1,0 +1,25 @@
+module ptr(clk,sm,pp,ph,ad);
+input pp, ph,clk,sm;
+output [3:0] ad;
+reg [3:0] top=4'hF;
+reg [3:0] air=4'hE;
+
+always @(posedge clk)
+begin
+	if(ph==1'b1&&sm==1'b0)
+	begin
+	top<=top-4'h1;
+	air<=air-4'h1;
+	end;
+
+	if(pp==1'b1&&sm==1'b0)
+	begin
+	top<=top+4'h1;
+	air<=air+4'h1;
+	end;
+end
+
+assign ad=ph?air:
+			pp?top:
+			4'hzz;
+endmodule

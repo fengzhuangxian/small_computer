@@ -1,0 +1,37 @@
+module con_signal(mova,movb,movc,movd,add,sub,jmp,jg,g,in1,out1,movi,halt,ir,sm,sm_en,ir_ld,ram_re,ram_wr,pc_ld,pc_in,reg_sr,reg_dr,reg_we,s,
+au_en,au_ac,gf_en,in_en,out_en,mux_s,push,pop,ph,pp,swr,sre);
+input mova,movb,movc,movd,add,sub,jmp,jg,g,in1,out1,movi,halt,sm,push,pop;
+input [7:0]ir;
+output sm_en,ir_ld,ram_re,ram_wr,pc_ld,pc_in,reg_we,au_en,gf_en,in_en,out_en,mux_s,ph,pp,swr,sre;
+output [1:0]reg_sr,reg_dr,s;
+output [3:0]au_ac; 
+reg sm_en,ir_ld,ram_re,ram_wr,pc_ld,pc_in,reg_we,au_en,gf_en,in_en,out_en,mux_s,ph,pp,swr,sre;
+reg [1:0]reg_sr,reg_dr,s;
+reg [3:0]au_ac;
+always @(mova,movb,movc,movd,add,sub,jmp,jg,g,in1,out1,movi,halt,ir,sm,push,pop)
+begin
+	sm_en=(!halt);
+	au_en=(mova||movb||add||sub||out1||push)&&sm;
+	out_en=out1;
+	in_en=in1;
+	reg_we=mova||movc||movd||add||sub||in1||movi||(pop&&sm);
+	reg_sr[1]=ir[1];
+	reg_sr[0]=ir[0];
+	reg_dr[1]=ir[3];
+	reg_dr[0]=ir[2];
+	pc_ld=jmp||jg&&g;
+	pc_in=movi||(!sm);
+	s[1]=movb;
+	s[0]=movc;
+	ram_wr=movb;
+	ram_re=movc||movi||(!sm);
+	ir_ld=!sm;
+	mux_s=(mova||movc||add||sub||in1||movi||(pop&sm));
+	gf_en=sub;
+	au_ac=ir[7:4];
+	pp=pop;
+	ph=push;
+	swr=push;
+	sre=pop;
+end
+endmodule
